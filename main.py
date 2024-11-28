@@ -10,6 +10,8 @@ def get_url():
     for page in range(1, 7):
         URL = f'https://scrapingclub.com/exercise/list_basic/?page={page}'
 
+        print(f'Собираю страницу: {page}')
+
         response = requests.get(URL, headers=HEADERS)
         soup = BeautifulSoup(response.text, 'lxml')
         cards = soup.find_all('div', class_ = 'w-full rounded border')
@@ -20,16 +22,16 @@ def get_url():
 
 
 
+def make_array():
+    for card_url in get_url():
+        response = requests.get(card_url, headers=HEADERS)
+        # sleep(3)
+        soup = BeautifulSoup(response.text, 'lxml')
+        card = soup.find('div', class_ = 'my-8 w-full rounded border')
 
-for card_url in get_url():
-    response = requests.get(card_url, headers=HEADERS)
-    sleep(3)
-    soup = BeautifulSoup(response.text, 'lxml')
-    card = soup.find('div', class_ = 'my-8 w-full rounded border')
+        name = card.find('h3', class_ = 'card-title').text.strip()
+        price = card.find('h4', class_ = 'my-4 card-price').text.strip()
+        description = card.find('p', class_ = 'card-description').text.strip()
+        img_url = HOST + card.find('img', class_ = 'card-img-top').get('src')
 
-    name = card.find('h3', class_ = 'card-title').text.strip()
-    price = card.find('h4', class_ = 'my-4 card-price').text.strip()
-    description = card.find('p', class_ = 'card-description').text.strip()
-    img_url = HOST + card.find('img', class_ = 'card-img-top').get('src')
-
-    print(f'{name}\n{price}\n{description}\n{img_url}\n')
+        yield name, price, description, img_url
