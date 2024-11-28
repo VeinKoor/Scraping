@@ -6,6 +6,8 @@ from fake_useragent import UserAgent
 HEADERS = {'User-Agent': UserAgent().random}
 HOST = 'https://scrapingclub.com'
 
+
+
 def get_url():
     for page in range(1, 7):
         URL = f'https://scrapingclub.com/exercise/list_basic/?page={page}'
@@ -34,4 +36,16 @@ def make_array():
         description = card.find('p', class_ = 'card-description').text.strip()
         img_url = HOST + card.find('img', class_ = 'card-img-top').get('src')
 
+        print('Собрал карточку')
+
+        download(img_url)
+
         yield name, price, description, img_url
+
+
+def download(url):
+    response = requests.get(url, stream=True, headers=HEADERS)
+    with open(r'D:\\Code\\Scraping\\images\\' + url.split('/')[-1], 'wb') as f:
+        for value in response.iter_content(1024*1024):
+            f.write(value)
+
