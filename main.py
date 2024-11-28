@@ -1,13 +1,20 @@
 import requests
 from bs4 import BeautifulSoup
 
-url = 'https://scrapingclub.com/exercise/list_basic/'
-response = requests.get(url)
 
-soup = BeautifulSoup(response.text, 'lxml')
 
-data = soup.find('div', class_ = 'w-full rounded border')
-info = data.find('div', class_ = 'p-4')
-name = info.find('h4')
+for page in range(1, 7):
+    URL = f'https://scrapingclub.com/exercise/list_basic/?page={page}'
+    HOST = 'https://scrapingclub.com'
 
-print(name.text)
+    response = requests.get(URL)
+    soup = BeautifulSoup(response.text, 'lxml')
+
+    cards = soup.find_all('div', class_ = 'w-full rounded border')
+
+    for card in cards:
+        name = card.find('h4').text.strip()
+        price = card.find('h5').text.strip()
+        url_img = HOST + card.find('img', class_ = 'card-img-top img-fluid').get('src')
+
+        print(name, price, url_img)
